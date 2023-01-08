@@ -23,10 +23,10 @@ window.onload = () => {
   const pi = Math.PI
   const twopi = pi*2
   const createPoint = () => {
-    const angle = Math.random()*twopi
+    const angle = Math.random()*pi+pi
     return {
-      x:Math.cos(angle)*minWH/2+minWH/2,
-      y:Math.sin(angle)*minWH/2+minWH/2,
+      x:Math.cos(angle)*minWH/2+width/2,
+      y:-0.5,//Math.sin(angle)*minWH/2+minWH/2,
       vx: 0,
       vy: 0,
       r: 0.5,
@@ -36,7 +36,7 @@ window.onload = () => {
   }
   const createPlayer = () =>{
     return {
-      x: minWH/2,
+      x: width/2,
       y: minWH/2,
       vx: 0,
       vy: 0,
@@ -77,13 +77,14 @@ window.onload = () => {
           const hitD = (bd-p.r+b.r)
         }
       }
+      p.vy += 0.98
       if(p.type === 'expander'){
         p.x += p.vx*0.02
         p.y += p.vy*0.02
         if(isDown){
           const d = Math.sqrt((mx-p.x)**2+(my-p.y)**2)
           p.vx += (mx-p.x)/d
-          p.vy += (my-p.y)/d
+          p.vy += (my-p.y)/d*2
           p.vx *=1
           p.vy*=1
         }
@@ -97,34 +98,34 @@ window.onload = () => {
         if(isDown){
           const d = Math.max(1,Math.sqrt((mx-p.x)**2+(my-p.y)**2))
           p.vx -= (mx-p.x)/d
-          p.vy -= (my-p.y)/d
+          p.vy -= (my-p.y)/d*3
         }
         p.vx *=.99
         p.vy*=0.99
       }
       if(p.x < p.r){
-        p.vx = -p.vx
+        p.vx = -p.vx + 0.1
         p.x = p.r
       }
-      if(p.y < p.r){
-        p.vy = -p.vy
-        p.y = p.r
+      if(p.y < -p.r){
+        p.vy = -p.vy + 0.1
+        p.y = -p.r
       }
-      if(p.x > minWH-p.r){
-        p.vx = -p.vx
-        p.x = minWH-p.r
+      if(p.x > width-p.r){
+        p.vx = -p.vx - 0.1
+        p.x = width-p.r
       }
-      if(p.y > minWH-p.r){
-        p.vy = -p.vy
-        p.y = minWH-p.r
+      if(p.y > height+p.r){
+        // p.vy = -p.vy - 0.1
+        p.y = -p.r
       }
     }
    draw()
   }
   loop()
   const move = e =>{
-    mx = e.touches[0].clientX
-    my = e.touches[0].clientY
+    mx = e.touches[0].pageX
+    my = e.touches[0].pageY
     isDown = true
   }
   const down = () => isDown = true

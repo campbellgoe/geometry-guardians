@@ -6,4 +6,4 @@ const port = process.env.PORT
 http.createServer(function (req, res) {
   file.serve(req, res);
 }).listen(port);
-console.log('listening on', port)
+console.log('listening on', port, 'http://localhost:'+port)
