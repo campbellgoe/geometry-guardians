@@ -20,13 +20,19 @@ window.onload = () => {
   }
   resize()
   window.addEventListener('resize', resize, false)
+  const o = {
+   x: 0,
+   y: 0
+  }
   const pi = Math.PI
   const twopi = pi*2
   const createPoint = () => {
     const angle = Math.random()*pi+pi
     return {
-      x:Math.cos(angle)*minWH/2+width/2,
-      y:-0.5,//Math.sin(angle)*minWH/2+minWH/2,
+ //    x:Math.cos(angle)*minWH/2+width/2-o.x,
+   //   y:Math.sin(angle)*minWH/2+height/2-o.y,
+      x: (Math.random() >= 0.5 ? -1 : width+1)-o.x,
+      y: (Math.random() >= 0.5 ? -1 : height+1)-o.y,
       vx: 0,
       vy: 0,
       r: 0.5,
@@ -37,7 +43,7 @@ window.onload = () => {
   const createPlayer = () =>{
     return {
       x: width/2,
-      y: minWH/2,
+      y: height/2,
       vx: 0,
       vy: 0,
       r: 2,
@@ -45,8 +51,10 @@ window.onload = () => {
       type: 'player'
     }
   }
+
   const PLAYER_INDEX = 0
   const points = [createPlayer()]
+  const player = points[PLAYER_INDEX]
   setInterval(()=>{
     points.push(createPoint())
   }, 500)
@@ -57,8 +65,14 @@ window.onload = () => {
       const p = points[i]
       ctx.strokeStyle = p.colour
       ctx.beginPath()
-      ctx.moveTo(p.x+p.r, p.y)
-      ctx.arc(p.x, p.y,p.r,0,twopi)
+      let x = p.x+o.x
+      let y = p.y+o.y
+      if(p.type == player.type){
+        x = p.x
+        y = p.y
+      }
+      ctx.moveTo(x+p.r, y)
+      ctx.arc(x, y,p.r,0,twopi)
       ctx.stroke()
       ctx.closePath()
     }
@@ -66,7 +80,6 @@ window.onload = () => {
   let allowLoop = true
   const loop = ms => {
    if(allowLoop) requestAnimationFrame(loop)
-   const player = points[PLAYER_INDEX]
    for(let i=0;i<points.length;i++){
       let p = points[i]
       let velMod = 1
@@ -77,14 +90,14 @@ window.onload = () => {
           const hitD = (bd-p.r+b.r)
         }
       }
-      p.vy += 0.98
+      //p.vy += 0.98
       if(p.type === 'expander'){
-        p.x += p.vx*0.02
-        p.y += p.vy*0.02
+        p.x += p.vx*0.01
+        p.y += p.vy*0.01
         if(isDown){
           const d = Math.sqrt((mx-p.x)**2+(my-p.y)**2)
           p.vx += (mx-p.x)/d
-          p.vy += (my-p.y)/d*2
+          p.vy += (my-p.y)/d
           p.vx *=1
           p.vy*=1
         }
@@ -93,17 +106,17 @@ window.onload = () => {
         p.vy*=0.99
       }
       if(p.type === player.type){
-        p.x += p.vx*0.1
-        p.y += p.vy*0.1
+        o.x -= p.vx*0.05
+        o.y -= p.vy*0.05
         if(isDown){
           const d = Math.max(1,Math.sqrt((mx-p.x)**2+(my-p.y)**2))
           p.vx -= (mx-p.x)/d
-          p.vy -= (my-p.y)/d*3
+          p.vy -= (my-p.y)/d
         }
         p.vx *=.99
         p.vy*=0.99
       }
-      if(p.x < p.r){
+ /*   if(p.x < p.r){
         p.vx = -p.vx + 0.1
         p.x = p.r
       }
@@ -118,7 +131,7 @@ window.onload = () => {
       if(p.y > height+p.r){
         // p.vy = -p.vy - 0.1
         p.y = -p.r
-      }
+      }*/
     }
    draw()
   }
